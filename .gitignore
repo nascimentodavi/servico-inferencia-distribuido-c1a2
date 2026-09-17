@@ -1,1 +1,4 @@
 .virtual-environment
+__pycache__/
+*.pyc
+app/modelo_sentimento.joblib

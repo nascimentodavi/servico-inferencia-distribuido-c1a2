@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package inferencia;
+
+// Contrato do serviço de inferência distribuído.
+// Deve produzir exatamente o mesmo resultado que a interface REST
+// para a mesma entrada, como exige o edital.
+service ServicoInferencia {
+  // Enfileira um texto para inferência e devolve o identificador do job.
+  rpc CriarInferencia(PedidoInferencia) returns (RespostaJobCriado);
+
+  // Consulta o status/resultado de um job pelo identificador.
+  rpc ConsultarInferencia(PedidoConsulta) returns (RespostaConsulta);
+}
+
+message PedidoInferencia {
+  string texto = 1;
+}
+
+message RespostaJobCriado {
+  string job_id = 1;
+}
+
+message PedidoConsulta {
+  string job_id = 1;
+}
+
+// status: "pendente" | "concluido" | "erro" | "nao_encontrado"
+// Os campos texto/sentimento/confianca só são preenchidos quando
+// status == "concluido"; erro só quando status == "erro".
+message RespostaConsulta {
+  string status = 1;
+  string texto = 2;
+  string sentimento = 3;
+  double confianca = 4;
+  string erro = 5;
+}

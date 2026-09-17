@@ -62,7 +62,13 @@ def consumir_proxima_tarefa(timeout_segundos: int = 5) -> dict | None:
     vez de bloquear para sempre.
     """
     cliente = conectar()
-    resultado = cliente.brpop([NOME_FILA], timeout=timeout_segundos)
+    try:
+        resultado = cliente.brpop([NOME_FILA], timeout=timeout_segundos)
+    except redis.exceptions.TimeoutError:
+        # Algumas versões do redis-py levantam TimeoutError no socket em vez
+        # de devolver None quando o BRPOP expira sem nenhuma tarefa chegar.
+        # Do ponto de vista do worker, isso é o mesmo que "sem tarefa agora".
+        return None
     if resultado is None:
         return None
 
